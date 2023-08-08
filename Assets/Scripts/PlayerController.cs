@@ -33,7 +33,11 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
 
     // How high the player can jump
-    public float jumpHeight = 2f;
+    public float jumpHeight = 1f;
+
+    //Creating a bool to disable player input, and setting to true for scene load.
+    [SerializeField] public bool canMove = true;
+
 
     private void Start()
     {
@@ -47,48 +51,53 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // These lines let the script rotate the player based on the mouse moving
-        yaw += speedH * Input.GetAxis("Mouse X");
-        pitch -= speedV * Input.GetAxis("Mouse Y");
-
-        // Get the Left/Right and Forward/Back values of the input being used (WASD, Joystick etc.)
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-
-        // Adds a sprint function
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        //Creating a way to disable player input during 'death'
+        if (canMove == true)
         {
-            speed = 6f;
+
+            // These lines let the script rotate the player based on the mouse moving
+            yaw += speedH * Input.GetAxis("Mouse X");
+            pitch -= speedV * Input.GetAxis("Mouse Y");
+
+            // Get the Left/Right and Forward/Back values of the input being used (WASD, Joystick etc.)
+            float x = Input.GetAxis("Horizontal");
+            float z = Input.GetAxis("Vertical");
+
+            // Adds a sprint function
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                speed = 4.5f;
+            }
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                speed = 3f;
+            }
+
+            // Let the player jump if they are on the ground and they press the jump button
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+            }
+
+            // Rotate the player based off those mouse values we collected earlier
+            transform.eulerAngles = new Vector3(0.0f, yaw, 0.0f);
+
+            // This is stealing the data about the player being on the ground from the character controller
+            isGrounded = controller.isGrounded;
+
+            if (isGrounded && velocity.y < 0)
+            {
+                velocity.y = -2f;
+            }
+
+            // This fakes gravity!
+            velocity.y += gravity * Time.deltaTime;
+
+            // This takes the Left/Right and Forward/Back values to build a vector
+            Vector3 move = transform.right * x + transform.forward * z;
+
+            // Finally, it applies that vector it just made to the character
+            controller.Move(move * speed * Time.deltaTime + velocity * Time.deltaTime);
         }
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            speed = 3f;
-        }
-
-        // Let the player jump if they are on the ground and they press the jump button
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
-        }
-
-        // Rotate the player based off those mouse values we collected earlier
-        transform.eulerAngles = new Vector3(0.0f, yaw, 0.0f);
-
-        // This is stealing the data about the player being on the ground from the character controller
-        isGrounded = controller.isGrounded;
-
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
-
-        // This fakes gravity!
-        velocity.y += gravity * Time.deltaTime;
-
-        // This takes the Left/Right and Forward/Back values to build a vector
-        Vector3 move = transform.right * x + transform.forward * z;
-
-        // Finally, it applies that vector it just made to the character
-        controller.Move(move * speed * Time.deltaTime + velocity * Time.deltaTime);
     }
 }

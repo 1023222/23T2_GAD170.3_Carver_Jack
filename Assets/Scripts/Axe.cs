@@ -6,8 +6,15 @@ public class Axe : MonoBehaviour
 {
     //AudioSource 2
     private AudioSource pickup;
+
     //Spin speed
     [SerializeField] private float spinSpeed = 150.0f;
+
+    //Creating a reference space for my other object to access it's script's methods.
+    [SerializeField] private PickUpWorkAround audioPickUpWorkAround;
+
+    //Creating a reference space for my door to access it's boolean.
+    [SerializeField] private Door doorAccess;
 
         private void Start()
     {
@@ -25,7 +32,13 @@ public class Axe : MonoBehaviour
         Debug.Log("You picked up 'Axe'!");
 
         //Play the correct AudioSource component
-        pickup.Play();
+        //pickup.Play();
+
+        //Run the method from Audio Pickup Work Around
+        audioPickUpWorkAround.PickUpSound();
+
+        //Switch bool on door to true
+        doorAccess.playerHasAxe = true;
 
         //Destroy the gameobject
         Destroy(gameObject);

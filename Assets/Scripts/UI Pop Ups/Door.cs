@@ -11,6 +11,9 @@ public class Door : MonoBehaviour
     //Make a condition for getting through.
     [SerializeField] public bool playerHasAxe;
 
+    //Reference Animation
+    [SerializeField] private ParticleSystem doorBreakVFX;
+
     private void Start()
     {
         //Disable the textbox on start so it's not showing.
@@ -27,10 +30,12 @@ public class Door : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
+            Debug.Log("Yup?");
             if (playerHasAxe == true)
             {
                 Debug.Log("You break down the makeshift barrier.");
                 Destroy(gameObject);
+                doorBreakVFX.Play();
             }
             else
             {

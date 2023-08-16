@@ -4,15 +4,22 @@ using UnityEngine;
 
 public class CrystalSpawner : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    [SerializeField] private GameObject crystalPrefab;
+
+    [SerializeField] private ParticleSystem crystalSpawnParticles;
+
+    public void InstantiateCrystal()
     {
-        
+        StartCoroutine(waitSeconds(3f));
+        crystalSpawnParticles.Play();
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator waitSeconds(float seconds)
     {
-        
+        yield return new WaitForSeconds(3f);
+        Instantiate(crystalPrefab);
+        crystalSpawnParticles.Pause();
     }
+
 }
